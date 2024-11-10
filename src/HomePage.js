@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom'; // Import Router components
-import BookCard from './BookCard';
-import './App.css';
+import BookCard from './BookCard';  // Import the BookCard component
+import './HomePage.css';  // Add custom styling if needed
 
 function HomePage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,8 +16,9 @@ function HomePage() {
     if (searchQuery) {
       fetchBooks();
     }
-  }, [searchQuery, page]); // Dependency array includes searchQuery and page
+  }, [searchQuery, page]);
 
+  // Function to fetch books from the Open Library API
   const fetchBooks = async () => {
     setLoading(true);
     setError(null);
@@ -33,21 +33,25 @@ function HomePage() {
     }
   };
 
+  // Handle input change for search bar
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
   };
 
+  // Trigger the search when the button is clicked
   const handleSearchClick = () => {
     setPage(1); // Reset to the first page for a new search
     fetchBooks();
   };
 
+  // Handle pagination for next page
   const handleNextPage = () => {
     if (page < totalPages) {
       setPage(page + 1);
     }
   };
 
+  // Handle pagination for previous page
   const handlePreviousPage = () => {
     if (page > 1) {
       setPage(page - 1);
@@ -55,7 +59,7 @@ function HomePage() {
   };
 
   return (
-    <div className="app">
+    <div className="home-page">
       <header>
         <h1>Book Finder</h1>
         <div className="search-form">
@@ -71,17 +75,23 @@ function HomePage() {
         </div>
       </header>
 
-      {loading && <div className="loading-spinner"></div>}
+      {/* Show loading spinner while fetching data */}
+      {loading && <div className="loading-spinner">Loading...</div>}
+
+      {/* Show error message if fetching fails */}
       {error && <div className="error">{error}</div>}
 
       <div className="books-container">
+        {/* Show message when no books are found */}
         {books.length === 0 && !loading && !error && <p>No books found.</p>}
 
+        {/* Render book cards */}
         {books.map((book) => (
           <BookCard key={book.key} book={book} />
         ))}
       </div>
 
+      {/* Pagination buttons */}
       {books.length > 0 && (
         <div className="pagination">
           <button onClick={handlePreviousPage} disabled={page === 1}>
@@ -97,41 +107,4 @@ function HomePage() {
   );
 }
 
-function BookDetailsPage() {
-  // This page can display details of a selected book
-  return (
-    <div className="book-details">
-      <h2>Book Details</h2>
-      <p>Details of the selected book will go here.</p>
-      {/* Add more details based on selected book */}
-    </div>
-  );
-}
-
-function App() {
-  return (
-    <Router>
-      <div className="app">
-        {/* Navigation Links */}
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/book-details">Book Details</Link>
-            </li>
-          </ul>
-        </nav>
-
-        {/* Routes */}
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/book-details" element={<BookDetailsPage />} />
-        </Routes>
-      </div>
-    </Router>
-  );
-}
-
-export default App;
+export default HomePage;
